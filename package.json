@@ -1,5 +1,5 @@
 {
-  "name": "@mattj65817/crypto-js",
+  "name": "@mattj65817/util-js",
   "version": "1.0.0",
   "description": "Cinira Utility library for JavaScript",
   "exports": {
@@ -11,7 +11,7 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "repository": {
-    "url": "git+https://github.com/mattj65817/crypto-js.git"
+    "url": "git+https://github.com/mattj65817/util-js.git"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.json && tsc -p ./tsconfig-cjs.json && tsc -p ./tsconfig-types.json",
