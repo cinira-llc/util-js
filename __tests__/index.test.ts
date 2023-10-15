@@ -1,4 +1,4 @@
-import {flattenValues, validateIn} from "../src";
+import {flattenValues, scale, validateIn} from "../src";
 
 describe("index.ts", () => {
     describe("flattenValues()", () => {
@@ -22,6 +22,19 @@ describe("index.ts", () => {
         test("for a mixture of single values and arrays of single values", () => {
             expect(flattenValues(["value1"], "value2", ["value3", "value4"]))
                 .toStrictEqual(["value1", "value2", "value3", "value4"]);
+        });
+    });
+    describe("scale()", () => {
+        test("For decimal digits < 0", () => {
+            expect(() => scale(123, -1)).toThrow(Error);
+        });
+        test("For zero decimal digits", () => {
+            expect(scale(123.1, 0)).toBe(123);
+            expect(scale(123.5, 0)).toBe(124);
+        });
+        test("For one decimal digit", () => {
+            expect(scale(123.01, 1)).toBe(123);
+            expect(scale(123.05, 1)).toBe(123.1);
         });
     });
     test("validateIn()", () => {
