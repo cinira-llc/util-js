@@ -1,4 +1,4 @@
-import {isKinded, isTimestamped} from "../src/util-types";
+import {isKinded, isTimestamped} from "../src";
 import {DateTime} from "luxon";
 
 describe("util-types.ts", () => {

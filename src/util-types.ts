@@ -2,6 +2,13 @@ import _ from "lodash";
 import {DateTime} from "luxon";
 
 /**
+ * Function which creates some object or value from an optional configuration object.
+ */
+export interface Creator<T, C> {
+    (config?: C): T;
+}
+
+/**
  * Generic object with an associated `kind` attribute.
  */
 export type Kinded<T extends object, K extends string> = T & { kind: K };
