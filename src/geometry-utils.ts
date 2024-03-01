@@ -72,7 +72,7 @@ export function polarToCartesian<P extends Path | Point>(polar: P, origin: Point
  * @param path the path or point.
  * @param digits the scale.
  */
-export function scalePath<P extends Path | Point>(path: P, digits: number = 0): P {
+export function scaledPath<P extends Path | Point>(path: P, digits: number = 0): P {
     if (_.isEmpty(path)) {
         return path;
     }

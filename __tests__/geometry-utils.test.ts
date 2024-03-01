@@ -1,4 +1,10 @@
-import { cartesianToPolar, intersection, polarToCartesian, scalePath, sortedPath } from "../src/geometry-utils";
+import {
+    cartesianToPolar,
+    intersection,
+    polarToCartesian,
+    scaledPath,
+    sortedPath,
+} from "../src/geometry-utils";
 
 describe("geometry-utils.ts", () => {
     describe("cartesianToPolar()", () => {
@@ -92,19 +98,19 @@ describe("geometry-utils.ts", () => {
             });
         });
     });
-    describe("scalePath()", () => {
+    describe("scaledPath()", () => {
         it("rounds paths by default", () => {
-            expect(scalePath([[1.25, 2.25], [3.25, 4.25]])).toEqual([[1, 2], [3, 4]]);
+            expect(scaledPath([[1.25, 2.25], [3.25, 4.25]])).toEqual([[1, 2], [3, 4]]);
         });
         it("rounds single points by default", () => {
-            expect(scalePath([1.25, 2.25])).toEqual([1, 2]);
+            expect(scaledPath([1.25, 2.25])).toEqual([1, 2]);
         });
         it("scales paths", () => {
-            expect(scalePath([[0.123, 1.234], [2.345, 3.456], [4.567, 5.678]], 2))
+            expect(scaledPath([[0.123, 1.234], [2.345, 3.456], [4.567, 5.678]], 2))
                 .toEqual([[0.12, 1.23], [2.35, 3.46], [4.57, 5.68]]);
         });
         it("scales single points", () => {
-            expect(scalePath([1.2345, 2.3456], 2)).toEqual([1.23, 2.35]);
+            expect(scaledPath([1.2345, 2.3456], 2)).toEqual([1.23, 2.35]);
         });
     });
     describe("sortedPath()", () => {
