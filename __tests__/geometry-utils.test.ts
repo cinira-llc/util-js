@@ -1,4 +1,4 @@
-import {cartesianToPolar, polarToCartesian} from "../src/geometry-utils";
+import {cartesianToPolar, polarToCartesian, scalePath, sortedPath} from "../src/geometry-utils";
 
 describe("geometry-utils.ts", () => {
     describe("cartesianToPolar()", () => {
@@ -77,6 +77,35 @@ describe("geometry-utils.ts", () => {
                 expect(x).toBeCloseTo(-1);
                 expect(y).toBeCloseTo(0);
             });
+        });
+    });
+    describe("scalePath()", () => {
+        it("rounds paths by default", () => {
+            expect(scalePath([[1.25, 2.25], [3.25, 4.25]])).toEqual([[1, 2], [3, 4]]);
+        });
+        it("rounds single points by default", () => {
+            expect(scalePath([1.25, 2.25])).toEqual([1, 2]);
+        });
+        it("scales paths", () => {
+            expect(scalePath([[0.123, 1.234], [2.345, 3.456], [4.567, 5.678]], 2))
+                .toEqual([[0.12, 1.23], [2.35, 3.46], [4.57, 5.68]]);
+        });
+        it("scales single points", () => {
+            expect(scalePath([1.2345, 2.3456], 2)).toEqual([1.23, 2.35]);
+        });
+    });
+    describe("sortedPath()", () => {
+        it("sorts by ascending X-coordinate by default", () => {
+            expect(sortedPath([[1, 0], [2, 2], [0, 3]])).toEqual([[0, 3], [1, 0], [2, 2]]);
+        });
+        it("sorts by descending X-coordinate", () => {
+            expect(sortedPath([[1, 1], [2, 1], [0, 1]], 0, true)).toEqual([[2, 1], [1, 1], [0, 1]]);
+        });
+        it("sorts by ascending Y-coordinate", () => {
+            expect(sortedPath([[1, 0], [2, 2], [0, 3]], 1)).toEqual([[1, 0], [2, 2], [0, 3]]);
+        });
+        it("sorts by descending X-coordinate", () => {
+            expect(sortedPath([[1, 0], [2, 2], [0, 3]], 1, true)).toEqual([[0, 3], [2, 2], [1, 0]]);
         });
     });
 });
