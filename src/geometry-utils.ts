@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {isPath, Path, Point} from "./geometry-types";
+import { isPath, Path, Point } from "./geometry-types";
 
 /**
  * Convert a point or path of points from Cartesian to polar coordinates.
@@ -20,6 +20,33 @@ export function cartesianToPolar<P extends Path | Point>(cart: P, origin: Point 
         const p = cartesianToPolar(next, prev);
         polar.push(p);
     }, [] as Path) as P;
+}
+
+/**
+ * Find the point, if any, at which two paths intersect. Only the *first* point (along path `p0`) of intersection is
+ * returned.
+ *
+ * @param p0 the first path.
+ * @param p1 the second path.
+ */
+export function intersection(p0: Path, p1: Path) {
+    for (let i0 = 0; i0 < p0.length - 1; i0 += 1) {
+        const [p0x, p0y] = p0[i0];
+        const [p1x, p1y] = p0[i0 + 1];
+        for (let i1 = 0; i1 < p1.length - 1; i1 += 1) {
+            const [p2x, p2y] = p1[i1];
+            const [p3x, p3y] = p1[i1 + 1];
+            const s1x = p1x - p0x;
+            const s1y = p1y - p0y;
+            const s2x = p3x - p2x;
+            const s2y = p3y - p2y;
+            const s = (-s1y * (p0x - p2x) + s1x * (p0y - p2y)) / (-s2x * s1y + s1x * s2y);
+            const t = (s2x * (p0y - p2y) - s2y * (p0x - p2x)) / (-s2x * s1y + s1x * s2y);
+            if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+                return [p0x + t * s1x, p0y + t * s1y] as Point;
+            }
+        }
+    }
 }
 
 /**
@@ -65,12 +92,13 @@ export function scalePath<P extends Path | Point>(path: P, digits: number = 0): 
  * descending order.
  *
  * @param path the path.
- * @param coord coordinate on which to sort, default `X`.
+ * @param vert sort on the vertical axis, default horizontal.
  * @param desc sort in descending order, default ascending.
  */
-export function sortedPath(path: Path, coord: 0 | 1 = 0, desc: boolean = false): Path {
+export function sortedPath(path: Path, vert: boolean = false, desc: boolean = false): Path {
+    const key = vert ? 1 : 0;
     const order = desc ? -1 : 1;
-    return [...path].sort((pt0, pt1) => order * (pt0[coord] - pt1[coord]));
+    return [...path].sort((pt0, pt1) => order * (pt0[key] - pt1[key]));
 }
 
 /**

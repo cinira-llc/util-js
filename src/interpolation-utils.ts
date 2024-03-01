@@ -1,3 +1,5 @@
+import _, { ArrayIterator } from "lodash";
+
 /**
  * Interpolate an entry of some type around or between some list of known entries. Each entry must be associated with
  * a value.
@@ -27,7 +29,7 @@
 export function interpolate<E>(
     value: number,
     entries: [number, E][],
-    interpolator: (factor: number, lE: E, uE: E) => E
+    interpolator: (value: number, factor: number, lE: E, uE: E) => E,
 ) {
     const sorted = [...entries].sort(([v0], [v1]) => v0 - v1);
     return sortedInterpolate(value, sorted, interpolator);
@@ -43,27 +45,50 @@ export function interpolate<E>(
 export function sortedInterpolate<E>(
     value: number,
     entries: [number, E][],
-    interpolator: (factor: number, lE: E, uE: E) => E
+    interpolator: (value: number, factor: number, lE: E, uE: E) => E,
 ) {
     const eC = entries.length;
     if (eC < 2) {
-        throw Error("At least two entries required.");
+        throw Error("Interpolation requires at least two reference entries.");
     }
     const uI = entries.findIndex(([v]) => v >= value);
     if (-1 === uI) {
         const [lV, lE] = entries[eC - 2];
         const [uV, uE] = entries[eC - 1];
-        return interpolator((value - lV) / (uV - lV), lE, uE);
+        return interpolator(value, (value - lV) / (uV - lV), lE, uE);
     } else {
         const [v, e] = entries[uI];
         if (v === value) {
             return e;
         } else if (0 === uI) {
             const [uV, uE] = entries[1];
-            return interpolator((value - v) / (uV - v), e, uE);
+            return interpolator(value, (value - v) / (uV - v), e, uE);
         } else {
             const [lV, lE] = entries[uI - 1];
-            return interpolator((value - lV) / (v - lV), lE, e);
+            return interpolator(value, (value - lV) / (v - lV), lE, e);
         }
     }
+}
+
+/**
+ * Same as {@link interpolate} but allows values to be extracted from entries via an arbitrary extractor callback.
+ *
+ * @param value the value.
+ * @param entries the entries.
+ * @param iteratee the value extractor callback.
+ * @param interpolator the interpolator callback.
+ */
+export function interpolateBy<E>(
+    value: number,
+    entries: E[],
+    iteratee: ArrayIterator<E, number>,
+    interpolator: (value: number, factor: number, lE: E, uE: E) => E,
+) {
+    const eC = entries.length;
+    if (eC < 2) {
+        throw Error("Interpolation requires at least two reference entries.");
+    }
+    const sorted = _.zip(_.map(entries, iteratee), entries)
+        .sort(([v0], [v1]) => v0! - v1!) as [number, E][];
+    return sortedInterpolate(value, sorted, interpolator);
 }

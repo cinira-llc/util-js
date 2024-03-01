@@ -1,4 +1,4 @@
-import {cartesianToPolar, polarToCartesian, scalePath, sortedPath} from "../src/geometry-utils";
+import { cartesianToPolar, intersection, polarToCartesian, scalePath, sortedPath } from "../src/geometry-utils";
 
 describe("geometry-utils.ts", () => {
     describe("cartesianToPolar()", () => {
@@ -38,6 +38,19 @@ describe("geometry-utils.ts", () => {
                 expect(x).toBeCloseTo(1);
                 expect(y).toBeCloseTo(Math.PI);
             });
+        });
+    });
+    describe("intersection()", () => {
+        it("finds intersections at endpoints", () => {
+            expect(intersection([[0, 0], [1, 1]], [[0, 0], [0, 1]])).toEqual([0, 0]);
+            expect(intersection([[0, 0], [1, 1]], [[1, 1], [2, 1]])).toEqual([1, 1]);
+            expect(intersection([[1, 1], [1, 2]], [[0, 1], [2, 1]])).toEqual([1, 1]);
+        });
+        it("finds intersections at mid segment", () => {
+            expect(intersection([[0, 0], [1, 1]], [[1, 0], [0, 1]])).toEqual([0.5, 0.5]);
+        });
+        it("returns undefined when there is no intersection", () => {
+            expect(intersection([[0, 0], [0, 1]], [[1, 0], [1, 1]])).toBeUndefined();
         });
     });
     describe("polarToCartesian()", () => {
@@ -99,13 +112,15 @@ describe("geometry-utils.ts", () => {
             expect(sortedPath([[1, 0], [2, 2], [0, 3]])).toEqual([[0, 3], [1, 0], [2, 2]]);
         });
         it("sorts by descending X-coordinate", () => {
-            expect(sortedPath([[1, 1], [2, 1], [0, 1]], 0, true)).toEqual([[2, 1], [1, 1], [0, 1]]);
+            expect(sortedPath([[1, 1], [2, 1], [0, 1]], false, true))
+                .toEqual([[2, 1], [1, 1], [0, 1]]);
         });
         it("sorts by ascending Y-coordinate", () => {
-            expect(sortedPath([[1, 0], [2, 2], [0, 3]], 1)).toEqual([[1, 0], [2, 2], [0, 3]]);
+            expect(sortedPath([[1, 0], [2, 2], [0, 3]], true)).toEqual([[1, 0], [2, 2], [0, 3]]);
         });
-        it("sorts by descending X-coordinate", () => {
-            expect(sortedPath([[1, 0], [2, 2], [0, 3]], 1, true)).toEqual([[0, 3], [2, 2], [1, 0]]);
+        it("sorts by descending Y-coordinate", () => {
+            expect(sortedPath([[1, 0], [2, 2], [0, 3]], true, true))
+                .toEqual([[0, 3], [2, 2], [1, 0]]);
         });
     });
 });
