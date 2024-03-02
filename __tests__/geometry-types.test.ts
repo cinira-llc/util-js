@@ -1,4 +1,4 @@
-import {isPath, isPoint} from "../src/geometry-types";
+import {isPath, isPoint} from "../src";
 
 describe("geometry-types.ts", () => {
     describe("isPath()", () => {

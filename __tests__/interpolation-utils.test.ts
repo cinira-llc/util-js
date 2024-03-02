@@ -1,4 +1,4 @@
-import { interpolate, interpolateBy } from "../src/interpolation-utils";
+import { interpolate, interpolateBy } from "../src";
 
 describe("interpolation-utils.ts", () => {
     describe("interpolate()", () => {
