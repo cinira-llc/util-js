@@ -1,4 +1,4 @@
-import _, { ArrayIterator } from "lodash";
+import _, {ArrayIterator} from "lodash";
 
 /**
  * Interpolate an entry of some type around or between some list of known entries. Each entry must be associated with
@@ -34,6 +34,31 @@ export function interpolate<E>(
     const sorted = [...entries].sort(([v0], [v1]) => v0 - v1);
     return sortedInterpolate(value, sorted, interpolator);
 }
+
+/**
+ * Given a list of entries containing some *value* property, pick the one or two entries that are adjacent to a given
+ * value, returning the index of the *first* adjacent entry and the adjacent entries themselves.
+ *
+ * * If `value` exactly matches one of the entries, that entry will be returned.
+ * * If `value` falls before the first entry, the first entry will be returned.
+ * * If `value` falls after the last entry, the last entry will be returned.
+ * * If `value` falls between two entries, those two entries will be returned (preceding then following).
+ *
+ * @param value the value.
+ * @param entries the entries.
+ */
+export function sortedPickAdjacent<E>(value: number, entries: [number, E][]): [number, E[]] {
+    const uI = entries.findIndex(([val]) => val >= value);
+    if (-1 === uI) {
+        return [entries.length - 1, [entries[entries.length - 1][1]]];
+    }
+    const [uV, uE] = entries[uI];
+    if (uV === value || 0 === uI) {
+        return [uI, [uE]];
+    }
+    return [uI - 1, [entries[uI - 1][1], uE]];
+}
+
 
 /**
  * Same as {@link interpolate} but requires that `entries` already be sorted by ascending `value`.
@@ -75,7 +100,7 @@ export function sortedInterpolate<E>(
  *
  * @param value the value.
  * @param entries the entries.
- * @param iteratee the value extractor callback.
+ * @param iteratee the value extractor.
  * @param interpolator the interpolator callback.
  */
 export function interpolateBy<E>(
@@ -91,4 +116,18 @@ export function interpolateBy<E>(
     const sorted = _.zip(_.map(entries, iteratee), entries)
         .sort(([v0], [v1]) => v0! - v1!) as [number, E][];
     return sortedInterpolate(value, sorted, interpolator);
+}
+
+/**
+ * Same as {@link sortedPickAdjacent} but allows values to be extracted from entries via an arbitrary extractor callback
+ * and does not require entries to be pre-sorted by value.
+ *
+ * @param value the value.
+ * @param entries the entries.
+ * @param iteratee the value extractor.
+ */
+export function pickAdjacentBy<E>(value: number, entries: E[], iteratee: ArrayIterator<E, number>) {
+    const sorted = _.zip(_.map(entries, iteratee), entries)
+        .sort(([v0], [v1]) => v0! - v1!) as [number, E][];
+    return sortedPickAdjacent(value, sorted);
 }
