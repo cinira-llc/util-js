@@ -4,7 +4,7 @@ import {
     polarToCartesian,
     scaledPath,
     sortedPath,
-} from "../src/geometry-utils";
+} from "../src";
 
 describe("geometry-utils.ts", () => {
     describe("cartesianToPolar()", () => {

@@ -1,5 +1,7 @@
 import _ from "lodash";
-import { isPath, Path, Point } from "./geometry-types";
+import {isPath} from "./geometry-types";
+
+import type {Path, Point} from "./geometry-types";
 
 /**
  * Convert a point or path of points from Cartesian to polar coordinates.

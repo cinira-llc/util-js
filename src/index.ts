@@ -1,7 +1,13 @@
 import { flattenValues, validateIn } from "./array-utils";
 import { isBox, isPath, isPoint } from "./geometry-types";
 import { cartesianToPolar, intersection, polarToCartesian, scaledPath, sortedPath } from "./geometry-utils";
-import { interpolate, interpolateBy, sortedInterpolate } from "./interpolation-utils";
+import {
+    interpolate,
+    interpolateBy,
+    pickAdjacentBy,
+    sortedInterpolate,
+    sortedPickAdjacent,
+} from "./interpolation-utils";
 import { scale } from "./number-utils";
 import { isKinded, isTimestamped } from "./util-types";
 
@@ -27,10 +33,12 @@ export {
     isPath,
     isPoint,
     isTimestamped,
+    pickAdjacentBy,
     polarToCartesian,
     scale,
     scaledPath,
     sortedInterpolate,
     sortedPath,
+    sortedPickAdjacent,
     validateIn,
 };

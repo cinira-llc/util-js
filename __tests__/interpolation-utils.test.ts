@@ -1,4 +1,4 @@
-import { interpolate, interpolateBy } from "../src/interpolation-utils";
+import {interpolate, interpolateBy, sortedPickAdjacent} from "../src";
 
 describe("interpolation-utils.ts", () => {
     describe("interpolate()", () => {
@@ -37,8 +37,44 @@ describe("interpolation-utils.ts", () => {
             v: `${v}=${l.v}:${u.v}:${f}`,
         });
         it("interpolates using an iteratee", () => {
-            expect(interpolateBy(1, [{ k: 0, v: "a" }, { k: 2, v: "b" }], ({ k }) => k, interpolator))
-                .toEqual({ k: 1, v: `1=a:b:0.5` });
+            expect(interpolateBy(1, [{k: 0, v: "a"}, {k: 2, v: "b"}], ({k}) => k, interpolator))
+                .toEqual({k: 1, v: `1=a:b:0.5`});
+        });
+    });
+    describe("sortedPickAdjacent()", () => {
+        it("returns the first entry if out of range low", () => {
+            const [index, adjacent] = sortedPickAdjacent(0, [
+                [100, "abc"],
+                [200, "def"]
+            ]);
+            expect(index).toEqual(0);
+            expect(adjacent[0]).toBe("abc");
+        });
+        it("returns the last entry if out of range high", () => {
+            const [index, adjacent] = sortedPickAdjacent(300, [
+                [100, "abc"],
+                [200, "def"]
+            ]);
+            expect(index).toEqual(1);
+            expect(adjacent[0]).toBe("def");
+        });
+        it("returns a single entry if exact match", () => {
+            const [index, adjacent] = sortedPickAdjacent(200, [
+                [100, "abc"],
+                [200, "def"]
+            ]);
+            expect(index).toEqual(1);
+            expect(adjacent[0]).toBe("def");
+        });
+        it("returns two adjacent entries if between", () => {
+            const [index, adjacent] = sortedPickAdjacent(150, [
+                [100, "abc"],
+                [200, "def"],
+            ]);
+            expect(index).toEqual(0);
+            expect(adjacent.length).toBe(2);
+            expect(adjacent[0]).toBe("abc");
+            expect(adjacent[1]).toBe("def");
         });
     });
 });
