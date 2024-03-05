@@ -51,6 +51,8 @@ describe("geometry-utils.ts", () => {
             expect(intersection([[0, 0], [1, 1]], [[0, 0], [0, 1]])).toEqual([0, 0]);
             expect(intersection([[0, 0], [1, 1]], [[1, 1], [2, 1]])).toEqual([1, 1]);
             expect(intersection([[1, 1], [1, 2]], [[0, 1], [2, 1]])).toEqual([1, 1]);
+            expect(intersection([[1, 1], [1, 2]], [[1, 2], [1, 3]])).toEqual([1, 2]);
+            expect(intersection([[1, 1], [2, 1]], [[2, 1], [3, 1]])).toEqual([2, 1]);
         });
         it("finds intersections at mid segment", () => {
             expect(intersection([[0, 0], [1, 1]], [[1, 0], [0, 1]])).toEqual([0.5, 0.5]);

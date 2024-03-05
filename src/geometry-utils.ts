@@ -1,7 +1,7 @@
 import _ from "lodash";
-import {isPath} from "./geometry-types";
+import { isPath } from "./geometry-types";
 
-import type {Path, Point} from "./geometry-types";
+import type { Path, Point } from "./geometry-types";
 
 /**
  * Convert a point or path of points from Cartesian to polar coordinates.
@@ -32,20 +32,28 @@ export function cartesianToPolar<P extends Path | Point>(cart: P, origin: Point 
  * @param p1 the second path.
  */
 export function intersection(p0: Path, p1: Path) {
-    for (let i0 = 0; i0 < p0.length - 1; i0 += 1) {
-        const [p0x, p0y] = p0[i0];
-        const [p1x, p1y] = p0[i0 + 1];
-        for (let i1 = 0; i1 < p1.length - 1; i1 += 1) {
-            const [p2x, p2y] = p1[i1];
-            const [p3x, p3y] = p1[i1 + 1];
-            const s1x = p1x - p0x;
-            const s1y = p1y - p0y;
-            const s2x = p3x - p2x;
-            const s2y = p3y - p2y;
-            const s = (-s1y * (p0x - p2x) + s1x * (p0y - p2y)) / (-s2x * s1y + s1x * s2y);
-            const t = (s2x * (p0y - p2y) - s2y * (p0x - p2x)) / (-s2x * s1y + s1x * s2y);
-            if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-                return [p0x + t * s1x, p0y + t * s1y] as Point;
+    const p0l = p0.length;
+    const p1l = p1.length;
+    for (let i0 = 0; i0 < p0l; i0 += 1) {
+        const pt0 = p0[i0];
+        for (let i1 = 0; i1 < p1l; i1 += 1) {
+            const pt2 = p1[i1];
+            if (_.isEqual(pt0, pt2)) {
+                return pt0;
+            } else if (i0 < p0l - 1 && i1 < p1l - 1) {
+                const [p0x, p0y] = pt0;
+                const [p1x, p1y] = i0 === p0.length - 1 ? pt0 : p0[i0 + 1];
+                const [p2x, p2y] = pt2;
+                const [p3x, p3y] = i1 === p1.length - 1 ? pt2 : p1[i1 + 1];
+                const s1x = p1x - p0x;
+                const s1y = p1y - p0y;
+                const s2x = p3x - p2x;
+                const s2y = p3y - p2y;
+                const s = (-s1y * (p0x - p2x) + s1x * (p0y - p2y)) / (-s2x * s1y + s1x * s2y);
+                const t = (s2x * (p0y - p2y) - s2y * (p0x - p2x)) / (-s2x * s1y + s1x * s2y);
+                if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+                    return [p0x + t * s1x, p0y + t * s1y] as Point;
+                }
             }
         }
     }
