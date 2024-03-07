@@ -1,7 +1,11 @@
 import {
     cartesianToPolar,
+    degreesToRadians,
     intersection,
+    polarDistance,
     polarToCartesian,
+    radiansToDegrees,
+    radianSum,
     scaledPath,
     sortedPath,
 } from "../src";
@@ -29,21 +33,65 @@ describe("geometry-utils.ts", () => {
                 expect(rho).toBeCloseTo(1);
                 expect(theta).toBeCloseTo(3 * Math.PI / 2);
             });
-            test("converts 1 unit E", () => {
+            it("converts 1 unit E", () => {
                 const [x, y] = cartesianToPolar([1, 0]);
                 expect(x).toBeCloseTo(1);
                 expect(y).toBeCloseTo(0);
             });
-            test("converts 1 unit S", () => {
+            it("converts 1 unit S", () => {
                 const [x, y] = cartesianToPolar([0, 1]);
                 expect(x).toBeCloseTo(1);
                 expect(y).toBeCloseTo(Math.PI / 2);
             });
-            test("converts 1 unit W", () => {
+            it("converts 1 unit W", () => {
                 const [x, y] = cartesianToPolar([-1, 0]);
                 expect(x).toBeCloseTo(1);
                 expect(y).toBeCloseTo(Math.PI);
             });
+        });
+    });
+    describe("degreesToRadians()", () => {
+        it("returns correct normalized results", () => {
+            expect(degreesToRadians(0, true)).toBeCloseTo(0);
+            expect(degreesToRadians(90, true)).toBeCloseTo(Math.PI / 2);
+            expect(degreesToRadians(180, true)).toBeCloseTo(Math.PI);
+            expect(degreesToRadians(270, true)).toBeCloseTo(3 * Math.PI / 2);
+            expect(degreesToRadians(360, true)).toBeCloseTo(0);
+            expect(degreesToRadians(-360, true)).toBeCloseTo(0);
+            expect(degreesToRadians(720, true)).toBeCloseTo(0);
+            expect(degreesToRadians(-720, true)).toBeCloseTo(0);
+        });
+        it("returns correct non-normalized results", () => {
+            expect(degreesToRadians(0)).toBeCloseTo(0);
+            expect(degreesToRadians(90)).toBeCloseTo(Math.PI / 2);
+            expect(degreesToRadians(180)).toBeCloseTo(Math.PI);
+            expect(degreesToRadians(270)).toBeCloseTo(3 * Math.PI / 2);
+            expect(degreesToRadians(360)).toBeCloseTo(2 * Math.PI);
+            expect(degreesToRadians(-360)).toBeCloseTo(-2 * Math.PI);
+            expect(degreesToRadians(720)).toBeCloseTo(4 * Math.PI);
+            expect(degreesToRadians(-720)).toBeCloseTo(-4 * Math.PI);
+        });
+    });
+    describe("radiansToDegrees()", () => {
+        it("returns correct normalized results", () => {
+            expect(radiansToDegrees(0, true)).toBeCloseTo(0);
+            expect(radiansToDegrees(Math.PI / 2, true)).toBeCloseTo(90);
+            expect(radiansToDegrees(Math.PI, true)).toBeCloseTo(180);
+            expect(radiansToDegrees(3 * Math.PI / 2, true)).toBeCloseTo(270);
+            expect(radiansToDegrees(2 * Math.PI, true)).toBeCloseTo(0);
+            expect(radiansToDegrees(-2 * Math.PI, true)).toBeCloseTo(0);
+            expect(radiansToDegrees(4 * Math.PI, true)).toBeCloseTo(0);
+            expect(radiansToDegrees(-4 * Math.PI, true)).toBeCloseTo(0);
+        });
+        it("returns correct non-normalized results", () => {
+            expect(radiansToDegrees(0)).toBeCloseTo(0);
+            expect(radiansToDegrees(Math.PI / 2)).toBeCloseTo(90);
+            expect(radiansToDegrees(Math.PI)).toBeCloseTo(180);
+            expect(radiansToDegrees(3 * Math.PI / 2)).toBeCloseTo(270);
+            expect(radiansToDegrees(2 * Math.PI)).toBeCloseTo(360);
+            expect(radiansToDegrees(-2 * Math.PI)).toBeCloseTo(-360);
+            expect(radiansToDegrees(4 * Math.PI)).toBeCloseTo(720);
+            expect(radiansToDegrees(-4 * Math.PI)).toBeCloseTo(-720);
         });
     });
     describe("intersection()", () => {
@@ -59,6 +107,19 @@ describe("geometry-utils.ts", () => {
         });
         it("returns undefined when there is no intersection", () => {
             expect(intersection([[0, 0], [0, 1]], [[1, 0], [1, 1]])).toBeUndefined();
+        });
+    });
+    describe("polarDistance()", () => {
+        it("calculates some known values", () => {
+            expect(polarDistance([0, 0], [0, 0])).toBeCloseTo(0);
+            expect(polarDistance([0, 0], [1, 0])).toBeCloseTo(1);
+            expect(polarDistance([0, 0], [1, Math.PI / 2])).toBeCloseTo(1);
+            expect(polarDistance([0, 0], [1, Math.PI])).toBeCloseTo(1);
+            expect(polarDistance([0, 0], [1, 3 * Math.PI / 2])).toBeCloseTo(1);
+            expect(polarDistance([1, 0], [1, Math.PI])).toBeCloseTo(2);
+            expect(polarDistance([1, 3 * Math.PI / 2], [1, Math.PI / 2])).toBeCloseTo(2);
+            expect(polarDistance([1, Math.PI], [1, 0])).toBeCloseTo(2);
+            expect(polarDistance([1, Math.PI / 2], [1, 3 * Math.PI / 2])).toBeCloseTo(2);
         });
     });
     describe("polarToCartesian()", () => {
@@ -98,6 +159,24 @@ describe("geometry-utils.ts", () => {
                 expect(x).toBeCloseTo(-1);
                 expect(y).toBeCloseTo(0);
             });
+        });
+    });
+    describe("radianSum()", () => {
+        it("returns correct results for known values", () => {
+            expect(radianSum(0, 0)).toBeCloseTo(0);
+            expect(radianSum(0, Math.PI)).toBeCloseTo(Math.PI);
+            expect(radianSum(Math.PI, 0)).toBeCloseTo(Math.PI);
+            expect(radianSum(Math.PI, Math.PI)).toBeCloseTo(0);
+            expect(radianSum(0, Math.PI / 2)).toBeCloseTo(Math.PI / 2);
+            expect(radianSum(0, -Math.PI / 2)).toBeCloseTo(3 * Math.PI / 2);
+            expect(radianSum(-Math.PI / 2, 0)).toBeCloseTo(3 * Math.PI / 2);
+            expect(radianSum(Math.PI / 2, 0)).toBeCloseTo(Math.PI / 2);
+            expect(radianSum(-Math.PI / 2, Math.PI / 2)).toBeCloseTo(0);
+            expect(radianSum(Math.PI / 2, -Math.PI / 2)).toBeCloseTo(0);
+            expect(radianSum(0, 2 * Math.PI)).toBeCloseTo(0);
+            expect(radianSum(0, -2 * Math.PI)).toBeCloseTo(0);
+            expect(radianSum(0, 4 * Math.PI)).toBeCloseTo(0);
+            expect(radianSum(0, -4 * Math.PI)).toBeCloseTo(0);
         });
     });
     describe("scaledPath()", () => {

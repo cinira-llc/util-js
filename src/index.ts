@@ -1,6 +1,16 @@
 import { flattenValues, validateIn } from "./array-utils";
 import { isBox, isPath, isPoint } from "./geometry-types";
-import { cartesianToPolar, intersection, polarToCartesian, scaledPath, sortedPath } from "./geometry-utils";
+import {
+    cartesianToPolar,
+    degreesToRadians,
+    intersection,
+    polarDistance,
+    polarToCartesian,
+    radiansToDegrees,
+    radianSum,
+    scaledPath,
+    sortedPath,
+} from "./geometry-utils";
 import {
     interpolate,
     interpolateBy,
@@ -24,6 +34,7 @@ export {
     Point,
     Timestamped,
     cartesianToPolar,
+    degreesToRadians,
     flattenValues,
     interpolate,
     interpolateBy,
@@ -34,7 +45,10 @@ export {
     isPoint,
     isTimestamped,
     pickAdjacentBy,
+    polarDistance,
     polarToCartesian,
+    radiansToDegrees,
+    radianSum,
     scale,
     scaledPath,
     sortedInterpolate,

@@ -25,6 +25,17 @@ export function cartesianToPolar<P extends Path | Point>(cart: P, origin: Point 
 }
 
 /**
+ * Convert degrees to radians.
+ *
+ * @param degrees angle in degrees.
+ * @param normalize whether to normalize the angle to the range [0, 2π).
+ */
+export function degreesToRadians(degrees: number, normalize = false) {
+    const radians = degrees / DEGREES_PER_RADIAN;
+    return normalize ? radianSum(0, radians) : radians;
+}
+
+/**
  * Find the point, if any, at which two paths intersect. Only the *first* point (along path `p0`) of intersection is
  * returned.
  *
@@ -60,6 +71,18 @@ export function intersection(p0: Path, p1: Path) {
 }
 
 /**
+ * Calculate the distance between two points in polar coordinates.
+ *
+ * @param p0 the first point.
+ * @param p1 the second point.
+ */
+export function polarDistance(p0: Point, p1: Point) {
+    const [r0, t0] = p0;
+    const [r1, t1] = p1;
+    return Math.sqrt(r0 * r0 + r1 * r1 - 2 * r0 * r1 * Math.cos(t0 - t1));
+}
+
+/**
  * Convert a point or path of points from polar to Cartesian coordinates.
  *
  * @param polar the path or point to convert.
@@ -74,6 +97,26 @@ export function polarToCartesian<P extends Path | Point>(polar: P, origin: Point
         const prev = 0 === cart.length ? origin : cart[cart.length - 1];
         cart.push(polarToCartesian(next, prev));
     }, [] as Path) as P;
+}
+
+/**
+ * Convert radians to degrees.
+ *
+ * @param radians angle in radians.
+ * @param normalize whether to normalize the angle to the range [0, 360).
+ */
+export function radiansToDegrees(radians: number, normalize = false) {
+    return (normalize ? radianSum(0, radians) : radians) * DEGREES_PER_RADIAN;
+}
+
+/**
+ * Sum two angles in radians and normalize the result to the range [0, 2π).
+ *
+ * @param r0 the first angle.
+ * @param rX additional angles.
+ */
+export function radianSum(r0: number, ...rX: number[]) {
+    return (_.sum([r0, ...rX]) + (1 + rX.length) * TWO_PI) % TWO_PI;
 }
 
 /**
@@ -110,6 +153,11 @@ export function sortedPath(path: Path, vert: boolean = false, desc: boolean = fa
     const order = desc ? -1 : 1;
     return [...path].sort((pt0, pt1) => order * (pt0[key] - pt1[key]));
 }
+
+/**
+ * Degrees per radian.
+ */
+const DEGREES_PER_RADIAN = 180 / Math.PI;
 
 /**
  * Two times π.
