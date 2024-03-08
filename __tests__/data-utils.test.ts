@@ -3,7 +3,6 @@ import { readJson, resolveUrl } from "../src/data-utils";
 
 describe("data-utils.ts", () => {
     describe("readJson()", () => {
-
         function isTsConfig(val: unknown): val is { compilerOptions: object } {
             return _.isObject(val) && "extends" in val && _.isString(val.extends);
         }
