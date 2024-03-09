@@ -1,23 +1,6 @@
-import _ from "lodash";
-import { readJson, resolveUrl } from "../src/data-utils";
+import { resolveUrl } from "../src/data-utils";
 
 describe("data-utils.ts", () => {
-    describe("readJson()", () => {
-
-        function isTsConfig(val: unknown): val is { compilerOptions: object } {
-            return _.isObject(val) && "extends" in val && _.isString(val.extends);
-        }
-
-        it("reads JSON data from a file", async () => {
-            const data = await readJson("./tsconfig.json", isTsConfig);
-            expect(isTsConfig(data)).toBe(true);
-        });
-        it("throws an error if the data does not match the guard", () => {
-            expect(async () => {
-                await readJson("./package.json", isTsConfig);
-            }).rejects.toThrow("Unexpected JSON data type.");
-        });
-    });
     describe("resolveUrl()", () => {
         it("resolves an absolute string with base", () => {
             expect(resolveUrl("https://google.com", "http://microsoft.com"))

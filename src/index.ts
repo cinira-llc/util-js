@@ -1,5 +1,5 @@
 import {flattenValues, validateIn} from "./array-utils";
-import {fetchJson, readJson} from "./data-utils";
+import {fetchJson} from "./data-utils";
 import {isBox, isPath, isPoint} from "./geometry-types";
 import {
     cartesianToPolar,
@@ -52,7 +52,6 @@ export {
     polarToCartesian,
     radiansToDegrees,
     radianSum,
-    readJson,
     scale,
     scaledPath,
     sortedInterpolate,
