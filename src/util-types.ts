@@ -46,12 +46,3 @@ export function isTimestamped(value: unknown): value is Timestamped<object> {
         && "timestamp" in value
         && value.timestamp instanceof DateTime;
 }
-
-/**
- * Type guard which always returns `true`.
- *
- * @param val the value.
- */
-function always<T>(val: unknown): val is T {
-    return true;
-}
