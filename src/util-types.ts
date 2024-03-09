@@ -9,6 +9,12 @@ export interface Creator<T, C> {
 }
 
 /**
+ * Signature of function that loads JSON from a location, specified as a string or a URL, parses it, and passes the
+ * result through a type guard.
+ */
+export type GuardedJsonLoader<T> = (location: URL | string, guard: typeof always<T>) => Promise<T>;
+
+/**
  * Generic object with an associated `kind` attribute.
  */
 export type Kinded<T extends object, K extends string> = T & { kind: K };
@@ -39,4 +45,13 @@ export function isTimestamped(value: unknown): value is Timestamped<object> {
     return _.isObject(value)
         && "timestamp" in value
         && value.timestamp instanceof DateTime;
+}
+
+/**
+ * Type guard which always returns `true`.
+ *
+ * @param val the value.
+ */
+function always<T>(val: unknown): val is T {
+    return true;
 }

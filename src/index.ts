@@ -22,7 +22,7 @@ import {
 import { scale } from "./number-utils";
 import { isKinded, isTimestamped } from "./util-types";
 
-import type { Creator, Kinded, Timestamped } from "./util-types";
+import type { Creator, GuardedJsonLoader, Kinded, Timestamped } from "./util-types";
 import type { Box, Dimensions, Path, Point } from "./geometry-types";
 
 /* Library exports. */
@@ -30,6 +30,7 @@ export {
     Box,
     Creator,
     Dimensions,
+    GuardedJsonLoader,
     Kinded,
     Path,
     Point,
