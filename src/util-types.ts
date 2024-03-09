@@ -12,7 +12,7 @@ export interface Creator<T, C> {
  * Signature of function that loads JSON from a location, specified as a string or a URL, parses it, and passes the
  * result through a type guard.
  */
-export type GuardedJsonLoader<T> = (location: URL | string, guard: (val: unknown) => val is T) => Promise<T>;
+export type GuardedJsonLoader = <T>(location: URL | string, guard: (val: unknown) => val is T) => Promise<T>;
 
 /**
  * Generic object with an associated `kind` attribute.
