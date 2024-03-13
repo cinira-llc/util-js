@@ -93,8 +93,8 @@ export function polarToCartesian<P extends Path | Point>(polar: P, origin: Point
         const [rho, theta] = polar as Point;
         return [origin[0] + rho * Math.cos(theta), origin[1] + rho * Math.sin(theta)] as P;
     }
-    return _.transform(polar as Path, (cart, next) => {
-        const prev = 0 === cart.length ? origin : cart[cart.length - 1];
+    return _.transform(polar as Path, (cart, next, i) => {
+        const prev = 0 === i ? origin : cart[i - 1];
         cart.push(polarToCartesian(next, prev));
     }, [] as Path) as P;
 }
