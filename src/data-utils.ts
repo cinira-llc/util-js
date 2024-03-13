@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { promises as fs } from "fs";
 
 /**
  * Resolve a (possibly relative) URL string into a [URL] object.
@@ -14,20 +13,6 @@ export function resolveUrl(url: string | URL, base?: string | Pick<Document, "ba
         return new URL(url, base.baseURI);
     }
     return new URL(url, base);
-}
-
-/**
- * Read JSON data from the filesystem, optionally passing it through a type guard to verify its content.
- *
- * @param path the source path to read.
- * @param guard the optional type guard to verify structure of the JSON data.
- */
-export async function readJson<T>(path: string, guard: (val: unknown) => val is T = always): Promise<T> {
-    const data = JSON.parse(await fs.readFile(path, "utf-8"));
-    if (!guard(data)) {
-        throw Error("Unexpected JSON data type.");
-    }
-    return data;
 }
 
 /**
