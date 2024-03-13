@@ -17,11 +17,7 @@ export function cartesianToPolar<P extends Path | Point>(cart: P, origin: Point 
         return [Math.sqrt(dx * dx + dy * dy), (TWO_PI + Math.atan2(dy, dx)) % TWO_PI] as P;
     }
     const path = cart as Path;
-    return _.transform(path, (polar, next) => {
-        const prev = 0 === polar.length ? origin : path[polar.length - 1];
-        const p = cartesianToPolar(next, prev);
-        polar.push(p);
-    }, [] as Path) as P;
+    return path.map(p => cartesianToPolar(p, origin)) as P;
 }
 
 /**
@@ -93,10 +89,7 @@ export function polarToCartesian<P extends Path | Point>(polar: P, origin: Point
         const [rho, theta] = polar as Point;
         return [origin[0] + rho * Math.cos(theta), origin[1] + rho * Math.sin(theta)] as P;
     }
-    return _.transform(polar as Path, (cart, next, i) => {
-        const prev = 0 === i ? origin : cart[i - 1];
-        cart.push(polarToCartesian(next, prev));
-    }, [] as Path) as P;
+    return (polar as Path).map(p => polarToCartesian(p, origin)) as P;
 }
 
 /**
