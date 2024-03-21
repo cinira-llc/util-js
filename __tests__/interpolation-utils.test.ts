@@ -23,10 +23,13 @@ describe("interpolation-utils.ts", () => {
         it("returns a match at the last entry", () => {
             expect(interpolate(3, [[1, "a"], [2, "b"], [3, "c"]], interpolator)).toEqual("c");
         });
-        it("throws when there are fewer than two entries", () => {
+        it("returns a single entry if it matches the value exactly", () => {
+            expect(interpolate(1, [[1, "a"]], interpolator)).toEqual("a");
+        });
+        it("throws when there are fewer than two entries and the value is not matched", () => {
             expect(() => interpolate(1, [], interpolator))
                 .toThrow("Interpolation requires at least two reference entries.");
-            expect(() => interpolate(1, [[1, "a"]], interpolator))
+            expect(() => interpolate(1, [[2, "a"]], interpolator))
                 .toThrow("Interpolation requires at least two reference entries.");
         });
     });

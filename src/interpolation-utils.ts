@@ -59,7 +59,6 @@ export function sortedPickAdjacent<E>(value: number, entries: [number, E][]): [n
     return [uI - 1, [entries[uI - 1][1], uE]];
 }
 
-
 /**
  * Same as {@link interpolate} but requires that `entries` already be sorted by ascending `value`.
  *
@@ -74,6 +73,12 @@ export function sortedInterpolate<E>(
 ) {
     const eC = entries.length;
     if (eC < 2) {
+        if (1 === eC) {
+            const [first] = entries;
+            if (value === first[0]) {
+                return first[1];
+            }
+        }
         throw Error("Interpolation requires at least two reference entries.");
     }
     const uI = entries.findIndex(([v]) => v >= value);
