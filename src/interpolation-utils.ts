@@ -1,4 +1,5 @@
-import _, {ArrayIterator} from "lodash";
+import _, { ArrayIterator } from "lodash";
+import { Interpolator, InterpolationTable, WeightedInterpolation } from "./interpolation-types";
 
 /**
  * Interpolate an entry of some type around or between some list of known entries. Each entry must be associated with
@@ -135,4 +136,124 @@ export function pickAdjacentBy<E>(value: number, entries: E[], iteratee: ArrayIt
     const sorted = _.zip(_.map(entries, iteratee), entries)
         .sort(([v0], [v1]) => v0! - v1!) as [number, E][];
     return sortedPickAdjacent(value, sorted);
+}
+
+/**
+ * Perform a weighted interpolation against a multidimensional interpolation table. Returns the interpolated value and
+ * an array representing the elements which contributed to the interpolation and their respective weights.
+ *
+ * @param table the interpolation table.
+ * @param interpolator the interpolation callback.
+ * @param inputs the input values.
+ */
+export function weightedInterpolate<E>(table: InterpolationTable<E>, interpolator: Interpolator<E>, inputs: number[]): WeightedInterpolation<E> {
+
+    /* Interpolate and calculate factors. */
+    const result = interpolateLevel(table, interpolator, inputs);
+
+    /* Convert factors to weights, group by element, and sort by descending weight. */
+    const weights = calculateWeights(result, inputs);
+    const weightsMap = _.transform(weights,
+        (weightsMap, [element, weight]) => {
+            if (!weightsMap.has(element)) {
+                weightsMap.set(element, weight);
+            } else {
+                weightsMap.set(element, weightsMap.get(element)! + weight);
+            }
+        }, new Map<E, number>());
+    return {
+        value: result.result as E,
+        weights: Array.from(weightsMap.entries()).sort(([, w0], [, w1]) => w1 - w0),
+    };
+}
+
+/**
+ * Calculate element weights from the results of a multidimensional interpolation.
+ *
+ * @param slot the interpolation slot.
+ * @param inputs the input values.
+ * @param weight the cumulative weight of this slot.
+ * @param depth the depth of the current slot.
+ */
+function calculateWeights<E>(slot: InterpolationSlot<E>, inputs: number[], weight: number = 1, depth = 0): WeightedInterpolation<E>["weights"] {
+    const { factor, lower, upper } = slot;
+    if (depth === (inputs.length - 1)) {
+        return [
+            [lower as E, weight * (1 - factor)],
+            [upper as E, weight * factor],
+        ];
+    }
+    const lS = lower as InterpolationSlot<E>;
+    const result = calculateWeights(lS, inputs, weight * (1 - factor), depth + 1);
+    if (lower !== upper) {
+        const uS = upper as InterpolationSlot<E>;
+        result.push(...calculateWeights(uS, inputs, weight * factor, depth + 1));
+    }
+    return result;
+}
+
+/**
+ * Handle a single level of interpolation from a multidimensional interpolation table.
+ *
+ * @param table the (sub)table to interpolate.
+ * @param interpolator the interpolation callback.
+ * @param inputs the input values.
+ * @param level the depth of the (sub)table.
+ */
+function interpolateLevel<E>(
+    table: InterpolationTable<E>,
+    interpolator: Interpolator<E>,
+    inputs: number[],
+    level: number = 0,
+): InterpolationSlot<E> {
+
+    /* Convert this level to an array of interpolation slots; last level is inherently a result. */
+    const deepest = level === table.length - 1;
+    const slots = _.map(table, ([value, entry]) => ({
+        factor: 0,
+        lower: entry,
+        upper: entry,
+        value,
+        ...(deepest ? { result: entry as E } : {}),
+    }) as InterpolationSlot<E>);
+
+    /* Determine whether we are at the last/deepest level of the tree. */
+    const result = interpolateBy(inputs[level], slots, s => s.value,
+        (value, factor, { lower }, { upper }) => {
+            if (!deepest) {
+                return { factor, lower, upper, value };
+            }
+            return {
+                result: interpolator(value, factor, lower as E, upper as E),
+                factor, lower, upper, value,
+            };
+        });
+    if (deepest) {
+        return result;
+    }
+
+    /* Anywhere except the last level, return the interpolated result of the next deeper level. Note that the
+    "same" stuff is only a small optimization: if we didn't need to interpolate at every level, some levels
+    will be upper === lower from the initial slot conversion. This has no effect on the end result. */
+    const { factor, lower, upper, value } = result;
+    const lI = interpolateLevel(lower as InterpolationTable<E>, interpolator, inputs, level + 1);
+    const same = lower === upper;
+    const uI = same ? lI : interpolateLevel(upper as InterpolationTable<E>, interpolator, inputs, level + 1);
+    return {
+        lower: lI,
+        upper: uI,
+        result: same ? lI.result : interpolator(value, factor, lI.result as E, uI.result as E),
+        factor, value,
+    };
+}
+
+/**
+ * Single slot in a weighted interpolation.
+ */
+interface InterpolationSlot<E> {
+    value: number,
+    factor: number;
+    lower: E | InterpolationTable<E> | InterpolationSlot<E>;
+    upper: E | InterpolationTable<E> | InterpolationSlot<E>;
+    result?: E;
 }

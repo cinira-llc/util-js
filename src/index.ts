@@ -1,6 +1,6 @@
-import {flattenValues, validateIn} from "./array-utils";
-import {fetchJson} from "./data-utils";
-import {isBox, isPath, isPoint} from "./geometry-types";
+import { flattenValues, validateIn } from "./array-utils";
+import { fetchJson } from "./data-utils";
+import { isBox, isPath, isPoint } from "./geometry-types";
 import {
     cartesianToPolar,
     degreesToRadians,
@@ -18,12 +18,14 @@ import {
     pickAdjacentBy,
     sortedInterpolate,
     sortedPickAdjacent,
+    weightedInterpolate,
 } from "./interpolation-utils";
-import {scale} from "./number-utils";
-import {isKinded, isTimestamped} from "./util-types";
+import { scale } from "./number-utils";
+import { isKinded, isTimestamped } from "./util-types";
 
-import type {Creator, GuardedJsonLoader, Kinded, Timestamped} from "./util-types";
-import type {Box, Dimensions, Path, Point} from "./geometry-types";
+import type { Interpolator, InterpolationTable, WeightedInterpolation } from "./interpolation-types";
+import type { Creator, GuardedJsonLoader, Kinded, Timestamped } from "./util-types";
+import type { Box, Dimensions, Path, Point } from "./geometry-types";
 
 /* Library exports. */
 export {
@@ -31,10 +33,13 @@ export {
     Creator,
     Dimensions,
     GuardedJsonLoader,
+    InterpolationTable,
+    Interpolator,
     Kinded,
     Path,
     Point,
     Timestamped,
+    WeightedInterpolation,
     cartesianToPolar,
     degreesToRadians,
     fetchJson,
@@ -58,4 +63,5 @@ export {
     sortedPath,
     sortedPickAdjacent,
     validateIn,
+    weightedInterpolate,
 };
