@@ -208,7 +208,7 @@ function interpolateLevel<E>(
 ): InterpolationSlot<E> {
 
     /* Convert this level to an array of interpolation slots; last level is inherently a result. */
-    const deepest = level === table.length - 1;
+    const deepest = level === inputs.length - 1;
     const slots = _.map(table, ([value, entry]) => ({
         factor: 0,
         lower: entry,
